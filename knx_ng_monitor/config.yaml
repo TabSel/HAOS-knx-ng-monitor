@@ -1,6 +1,6 @@
 name: "KNX-NG-Monitor"
-version: "0.8.0.2"
-slug: "knx_ng_monitor"
+version: "0.8.1"
+slug: "nx_ng_monitor"
 description: "Moderner KNX-Bus-Monitor: Live-Telegramme, ETS-Projekt-Import, Charts, Topologie, KNX Secure & Statistiken (Wrapper um ingel81/knx-ng-monitor)"
 url: "https://github.com/ingel81/knx-ng-monitor"
 arch:

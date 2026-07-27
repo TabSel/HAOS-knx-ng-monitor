@@ -18,24 +18,8 @@ wird nicht neu kompiliert.
 
 ## Installation
 
-### Variante A: Als lokale App (am einfachsten für einen einzelnen Pi)
-
-1. Auf dem Home-Assistant-Host per Samba/SSH den Ordner `addons` öffnen
-   (bei HA OS z.B. über den Samba-Share `\\homeassistant\addons` oder den
-   SSH-/Terminal-App-Zugriff auf `/addons`). Der Ordnername selbst blieb
-   auch nach der Umbenennung von Add-ons zu Apps unverändert `addons`.
-2. Den Ordner `knx_ng_monitor` (aus diesem Repository) komplett dort hinein
-   kopieren, sodass am Ende `/addons/knx_ng_monitor/config.yaml` existiert.
-3. In Home Assistant: **Einstellungen → Apps → App-Store** → oben rechts
-   **⋮ → Neu laden**.
-4. Unter "Lokale Apps" erscheint **KNX-NG-Monitor** → installieren.
-
-### Variante B: Als eigenes Repository (für mehrere Instanzen / Updates per Git)
-
-1. Diesen kompletten Ordner (inkl. `repository.yaml`) in ein eigenes
-   GitHub-Repository pushen.
-2. In Home Assistant: **Einstellungen → Apps → App-Store → ⋮ →
-   Repositories** → die URL deines Repos eintragen.
+1. In Home Assistant: **Einstellungen → Apps → App installieren → ⋮ →
+   Repositories** → die URL des Repos eintragen.
 3. **KNX-NG-Monitor** erscheint in der Liste → installieren.
 
 ## Konfiguration
@@ -59,11 +43,7 @@ der Anwendung vorgenommen, nicht über die Konfiguration der App.
 1. App starten (Tab **Info** → Start).
 2. Web-UI öffnen: `http://<home-assistant-ip>:8080`
    (Port ist im Tab **Netzwerk** der App änderbar).
-3. Der Einrichtungsassistent legt beim ersten Start den Admin-Benutzer an.
-4. Optional: ETS-Projekt (`.knxproj`) importieren.
-5. Unter **Settings** das KNX-IP-Interface (IP, Port, Tunneling/Routing)
-   konfigurieren.
-6. **Monitor**-Ansicht öffnen und den Bus beobachten.
+3. alles weitere unter [First Time Setup](https://github.com/ingel81/knx-ng-monitor) First Time Setup
 
 ## Datenpersistenz
 
@@ -82,22 +62,6 @@ Falls Routing benötigt wird und es zu keiner Verbindung kommt: In
 `config.yaml` `host_network: true` setzen und die App neu installieren (dann
 läuft der Container im Host-Netzwerk und der Port 8080 muss auf dem Pi selbst
 frei sein).
-
-## Updates
-
-Die App aktualisiert sich **nicht automatisch**, wenn es ein neues
-Upstream-Release gibt – Home Assistant beobachtet nur die `version:` in
-diesem Repo, nicht Docker Hub. Zum Aktualisieren:
-
-1. Auf [Docker Hub](https://hub.docker.com/r/ingel81/knx-ng-monitor/tags)
-   nachsehen, welches Tag die gewünschte neue Version hat.
-2. In `knx_ng_monitor/Dockerfile` die Zeile `ARG UPSTREAM_VERSION=...` auf
-   dieses Tag setzen.
-3. In `knx_ng_monitor/config.yaml` die `version:` erhöhen (nur so zeigt Home
-   Assistant "Update verfügbar" an).
-4. Committen & pushen, dann in HA: App-Store → Neu laden → Update
-   installieren. Zeigt HA kein Update an, hilft ein manueller **Rebuild**
-   auf der Detailseite der App.
 
 ## Hinweis zu Ingress
 

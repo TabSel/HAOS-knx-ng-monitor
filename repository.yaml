@@ -1,3 +1,3 @@
-name: "KNX-NG-Monitor App Repository"
+name: "KNX-NG-Monitor App "
 url: "https://github.com/<dein-github-user>/HAOS-knx-ng-monitor"
-maintainer: "Selbst erstellt – basiert auf ingel81/knx-ng-monitor"
+maintainer: "Wrapper um ingel81/knx-ng-monitor unter HAOS laufen zu lassen"
