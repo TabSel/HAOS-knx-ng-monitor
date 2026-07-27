@@ -7,7 +7,7 @@
 # exakten String hier eintragen. Docker Hub prüft bei einer konkreten
 # Versionsnummer garantiert neu, "latest" kann dagegen aus dem lokalen
 # Build-Cache bedient werden und bringt dann kein echtes Update.
-ARG UPSTREAM_VERSION=latest
+ARG UPSTREAM_VERSION=v0.8.1
 
 #
 # Wichtig: Das Upstream-Image deklariert "VOLUME /app/data". Würde man

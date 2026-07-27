@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.1.0
+
+- Upstream aktualisiert auf v0.8.1. Release-Notes: https://github.com/ingel81/knx-ng-monitor/releases/tag/v0.8.1
+
+
 All notable changes to KNX-NG-Monitor are documented here.
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/),
 and the project follows [Semantic Versioning](https://semver.org/) (pre-1.0, so
