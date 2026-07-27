@@ -90,6 +90,6 @@ jobs:
       - name: Pull Request automatisch mergen
         if: steps.upstream.outputs.tag != steps.current.outputs.version
         run: |
-          gh prmerge upstream-update-${{ steps.upstream.outputs.tag }} \
+          gh pr merge upstream-update-${{ steps.upstream.outputs.tag }} \
           --squash \
           --delete-branch
