@@ -39,7 +39,7 @@ jobs:
           echo "version=$CURRENT" >> "$GITHUB_OUTPUT"
 
       - name: Dockerfile, config.yaml und CHANGELOG aktualisieren
-        if: steps.upstream.outputs.tag != steps.current.outputs.version
+        if: "!startsWith(steps.current.outputs.version, format('{0}.', steps.upstream.outputs.tag))"
         id: bump
         run: |
           set -e
@@ -71,7 +71,7 @@ jobs:
           echo "new_version=${NEW_STRIPPED}.0" >> "$GITHUB_OUTPUT"
 
       - name: Pull Request erstellen
-        if: steps.upstream.outputs.tag != steps.current.outputs.version
+        if: "!startsWith(steps.current.outputs.version, format('{0}.', steps.upstream.outputs.tag))"
         uses: peter-evans/create-pull-request@v6
         with:
           commit-message: "Upstream-Update auf ${{ steps.upstream.outputs.tag }}"
@@ -88,7 +88,7 @@ jobs:
             - `knx_ng_monitor/CHANGELOG.md`: Link auf die Upstream-Release-Notes
             
       - name: Pull Request automatisch mergen
-        if: steps.upstream.outputs.tag != steps.current.outputs.version
+        if: "!startsWith(steps.current.outputs.version, format('{0}.', steps.upstream.outputs.tag))"
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
