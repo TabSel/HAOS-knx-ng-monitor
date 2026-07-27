@@ -89,6 +89,8 @@ jobs:
             
       - name: Pull Request automatisch mergen
         if: steps.upstream.outputs.tag != steps.current.outputs.version
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh pr merge upstream-update-${{ steps.upstream.outputs.tag }} \
           --squash \
