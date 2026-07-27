@@ -1,5 +1,5 @@
 name: "KNX-NG-Monitor"
-version: "0.8.2.0"
+version: "0.8.3.0"
 description: "https://github.com/ingel81/knx-ng-monitor als HAOS App"
 slug: "nx_ng_monitor"
 url: "https://github.com/ingel81/knx-ng-monitor"
