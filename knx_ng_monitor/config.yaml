@@ -1,5 +1,5 @@
 name: "KNX-NG-Monitor"
-version: "0.8.1.0"
+version: "0.8.1.1"
 description: "https://github.com/ingel81/knx-ng-monitor als HAOS App"
 slug: "nx_ng_monitor"
 url: "https://github.com/ingel81/knx-ng-monitor"
@@ -11,7 +11,7 @@ startup: services
 boot: auto
 hassio_api: false
 homeassistant_api: false
-host_network: false
+host_network: true
 ingress: false
 ports:
   8080/tcp: 8080
