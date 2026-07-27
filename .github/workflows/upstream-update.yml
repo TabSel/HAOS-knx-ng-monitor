@@ -39,7 +39,7 @@ jobs:
           echo "version=$CURRENT" >> "$GITHUB_OUTPUT"
 
       - name: Dockerfile, config.yaml und CHANGELOG aktualisieren
-        if: "!startsWith(steps.current.outputs.version, format('{0}.', steps.upstream.outputs.tag))"
+        if: steps.current.outputs.version != steps.upstream.outputs.tag
         id: bump
         run: |
           set -e
@@ -49,10 +49,8 @@ jobs:
           # Dockerfile: Upstream-Version pinnen
           sed -i "s/^ARG UPSTREAM_VERSION=.*/ARG UPSTREAM_VERSION=${NEW}/" knx_ng_monitor/Dockerfile
 
-          # config.yaml: Version auf <upstream>.0 setzen (frischer Wrapper-Stand
-          # für dieses Upstream-Release; manuelle Wrapper-Fixes erhöhen die
-          # letzte Stelle danach von Hand, z.B. auf .1, .2, ...)
-          sed -i "s/^version: \".*\"/version: \"${NEW_STRIPPED}.0\"/" knx_ng_monitor/config.yaml
+          # config.yaml: Version auf <upstream> setzen
+          sed -i "s/^version: \".*\"/version: \"${NEW_STRIPPED}\"/" knx_ng_monitor/config.yaml
 
           # CHANGELOG: neuen Eintrag mit Link auf die Upstream-Release-Notes
           # voranstellen (kein Volltext-Copy, damit nichts veraltet oder
@@ -68,10 +66,10 @@ jobs:
           } > /tmp/CHANGELOG.md
           mv /tmp/CHANGELOG.md knx_ng_monitor/CHANGELOG.md
 
-          echo "new_version=${NEW_STRIPPED}.0" >> "$GITHUB_OUTPUT"
+          echo "new_version=${NEW_STRIPPED}" >> "$GITHUB_OUTPUT"
 
       - name: Pull Request erstellen
-        if: "!startsWith(steps.current.outputs.version, format('{0}.', steps.upstream.outputs.tag))"
+        if: steps.current.outputs.version != steps.upstream.outputs.tag
         uses: peter-evans/create-pull-request@v6
         with:
           commit-message: "Upstream-Update auf ${{ steps.upstream.outputs.tag }}"
@@ -88,7 +86,7 @@ jobs:
             - `knx_ng_monitor/CHANGELOG.md`: Link auf die Upstream-Release-Notes
             
       - name: Pull Request automatisch mergen
-        if: "!startsWith(steps.current.outputs.version, format('{0}.', steps.upstream.outputs.tag))"
+        if: steps.current.outputs.version != steps.upstream.outputs.tag
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
