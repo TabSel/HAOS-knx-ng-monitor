@@ -86,5 +86,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh pr merge --auto --squash "${{ steps.pr.outputs.pull-request-number }}" \
+          gh pr merge "${{ steps.pr.outputs.pull-request-number }}" \
             --repo "${{ github.repository }}"
