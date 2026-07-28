@@ -67,3 +67,24 @@ jobs:
           mv /tmp/CHANGELOG.md knx_ng_monitor/CHANGELOG.md
 
           echo "new_version=${NEW_STRIPPED}" >> "$GITHUB_OUTPUT"
+          
+      - name: Pull Request erstellen
+        if: steps.current.outputs.version != steps.upstream.outputs.tag
+        id: pr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "Upstream-Update auf ${{ steps.upstream.outputs.tag }}"
+          branch: upstream-update-${{ steps.upstream.outputs.tag }}
+          title: "Upstream-Update: ${{ steps.upstream.outputs.tag }}"
+          body: |
+            Neues Upstream-Release von
+            [ingel81/knx-ng-monitor](https://github.com/ingel81/knx-ng-monitor):
+            **${{ steps.upstream.outputs.tag }}**
+            
+      - name: Merge
+        if: steps.current.outputs.version != steps.upstream.outputs.tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr merge --auto --squash "${{ steps.pr.outputs.pull-request-number }}" \
+            --repo "${{ github.repository }}"
