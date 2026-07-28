@@ -1,0 +1,90 @@
+name: Upstream-Update prüfen
+
+# Prüft regelmäßig, ob es ein neueres Release von ingel81/knx-ng-monitor gibt,
+# und öffnet bei Bedarf automatisch einen Pull Request mit:
+#   - aktualisiertem ARG UPSTREAM_VERSION im Dockerfile
+#   - erhöhter Version in knx_ng_monitor/config.yaml
+#   - einem Link auf die Upstream-Release-Notes im CHANGELOG.md
+
+on:
+  schedule:
+    - cron: "0 6 * * *"   # täglich 06:00 UTC
+  workflow_dispatch: {}    # manuell auslösbar über den "Run workflow"-Button
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check-upstream:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Neuestes Upstream-Release ermitteln
+        id: upstream
+        run: |
+          TAG=$(curl -sf https://api.github.com/repos/ingel81/knx-ng-monitor/releases/latest | jq -r '.tag_name // empty')
+          if [ -z "$TAG" ]; then
+            echo "Konnte kein Release ermitteln - breche ab." >&2
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Aktuell gepinnte Version auslesen
+        id: current
+        run: |
+          CURRENT=$(grep -oP '(?<=^ARG UPSTREAM_VERSION=).*' knx_ng_monitor/Dockerfile)
+          echo "version=$CURRENT" >> "$GITHUB_OUTPUT"
+
+      - name: Dockerfile, config.yaml und CHANGELOG aktualisieren
+        if: steps.current.outputs.version != steps.upstream.outputs.tag
+        id: bump
+        run: |
+          set -e
+          NEW="${{ steps.upstream.outputs.tag }}"
+          NEW_STRIPPED="${NEW#v}"
+
+          # Dockerfile: Upstream-Version pinnen
+          sed -i "s/^ARG UPSTREAM_VERSION=.*/ARG UPSTREAM_VERSION=${NEW}/" knx_ng_monitor/Dockerfile
+
+          # config.yaml: Version auf <upstream> setzen
+          sed -i "s/^version: \".*\"/version: \"${NEW_STRIPPED}\"/" knx_ng_monitor/config.yaml
+
+          # CHANGELOG: neuen Eintrag mit Link auf die Upstream-Release-Notes
+          # voranstellen (kein Volltext-Copy, damit nichts veraltet oder
+          # dupliziert wird)
+          {
+            echo "# Changelog"
+            echo ""
+            echo "## ${NEW_STRIPPED}.0"
+            echo ""
+            echo "- Upstream aktualisiert auf ${NEW}. Release-Notes: https://github.com/ingel81/knx-ng-monitor/releases/tag/${NEW}"
+            echo ""
+            tail -n +2 knx_ng_monitor/CHANGELOG.md
+          } > /tmp/CHANGELOG.md
+          mv /tmp/CHANGELOG.md knx_ng_monitor/CHANGELOG.md
+
+          echo "new_version=${NEW_STRIPPED}" >> "$GITHUB_OUTPUT"
+          
+      - name: Pull Request erstellen
+        if: steps.current.outputs.version != steps.upstream.outputs.tag
+        id: pr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "Upstream-Update auf ${{ steps.upstream.outputs.tag }}"
+          branch: upstream-update-${{ steps.upstream.outputs.tag }}
+          title: "Upstream-Update: ${{ steps.upstream.outputs.tag }}"
+          body: |
+            Neues Upstream-Release von
+            [ingel81/knx-ng-monitor](https://github.com/ingel81/knx-ng-monitor):
+            **${{ steps.upstream.outputs.tag }}**
+            
+      - name: Merge
+        if: steps.current.outputs.version != steps.upstream.outputs.tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr merge --squash "${{ steps.pr.outputs.pull-request-number }}" \
+            --repo "${{ github.repository }}"
